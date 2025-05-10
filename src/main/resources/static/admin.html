@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ-панель</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<header>
+    <div class="top-bar">
+        <div class="location">Москва ▼</div>
+        <div class="contact">Сервисный центр. Москва и область +7 (800) 333-09-89</div>
+    </div>
+    <nav>
+        <div class="logo">Music Store</div>
+        <ul>
+            <li>
+                <a href="/index.html" class="nav-link">
+                    <span class="nav-icon">←</span> Назад в каталог
+                </a>
+            </li>
+            <li>
+                <a href="/profile.html" class="nav-link">
+                    <img src="/images/user-icon.png" alt="Profile" class="nav-icon"> Личный кабинет
+                </a>
+            </li>
+            <li>
+                <a href="/logout" class="nav-link">
+                    Выйти
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+
+<section class="admin-panel">
+    <div class="admin-container">
+        <h2>Админ-панель</h2>
+
+        <!-- Кнопка для перехода на страницу с метриками -->
+        <div class="admin-section">
+            <button class="admin-button" onclick="window.location.href='/metrics.html'">Показать метрики</button>
+        </div>
+
+        <!-- Управление товарами -->
+        <div class="admin-section">
+            <h3>Управление товарами</h3>
+            <button class="admin-button" onclick="showAddProductForm()">Добавить товар</button>
+            <div id="add-product-form" style="display: none;">
+                <h4 id="product-form-title">Добавить новый товар</h4>
+                <form id="product-form">
+                    <label>Название*</label>
+                    <input type="text" name="name" placeholder="Введите название товара" required>
+                    <label>Бренд</label>
+                    <input type="text" name="brand" placeholder="Введите бренд">
+                    <label>Цена (руб.)*</label>
+                    <input type="number" name="price" placeholder="Введите цену" required>
+                    <label>Категория</label>
+                    <input type="text" name="category" placeholder="Введите категорию">
+                    <label>Описание</label>
+                    <textarea name="description" placeholder="Введите описание"></textarea>
+                    <label>Изображение (URL)</label>
+                    <input type="text" name="image" placeholder="Введите URL изображения">
+                    <button type="submit">Сохранить</button>
+                    <button type="button" onclick="hideAddProductForm()">Отмена</button>
+                </form>
+            </div>
+            <table id="products-table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Название</th>
+                    <th>Цена (руб.)</th>
+                    <th>Изображение</th>
+                    <th>Действия</th>
+                </tr>
+                </thead>
+                <tbody id="products-list"></tbody>
+            </table>
+        </div>
+
+        <!-- Управление пользователями -->
+        <div class="admin-section">
+            <h3>Управление пользователями</h3>
+            <table id="users-table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Логин</th>
+                    <th>Email</th>
+                    <th>Роль</th>
+                    <th>Действия</th>
+                </tr>
+                </thead>
+                <tbody id="users-list"></tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <div class="footer-content">
+        <div class="footer-contacts">
+            <h3>Контакты</h3>
+            <p>Телефон:  +7 (800) 333-99-99</p>
+            <p><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7f161119103f120a0c161c0c0b100d1a510d0a">Email:  info@musicstore.ru</a></p>
+        </div>
+        <div class="footer-copyright">
+            <p>© Магазин персонального аудио «Music Store», 2020-2025</p>
+        </div>
+    </div>
+</footer>
+
+<script src="/js/script.js"></script>
+<script src="/js/admin_script.js"></script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'932d56ca1f8e7bdb',t:'MTc0NTA3NTUzNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+</body>
+</html>
