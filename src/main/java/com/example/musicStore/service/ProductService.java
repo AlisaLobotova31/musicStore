@@ -12,30 +12,55 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Сервис для управления продуктами, включая получение, сохранение и удаление продуктов.
+ */
 @Service
 public class ProductService {
 
+    /**
+     * Репозиторий для работы с продуктами.
+     */
     @Autowired
     private ProductRepository productRepository;
 
+    /**
+     * Репозиторий для работы с корзинами.
+     */
     @Autowired
     private CartRepository cartRepository;
 
+    /**
+     * Репозиторий для работы с заказами.
+     */
     @Autowired
     private OrderRepository orderRepository;
 
-    // Получение всех товаров
+    /**
+     * Возвращает список всех продуктов.
+     *
+     * @return список продуктов
+     */
     public List<Product> getAllProducts() {
         return productRepository.findAll();
     }
 
-    // Получение товара по ID
+    /**
+     * Возвращает продукт по его идентификатору.
+     *
+     * @param id идентификатор продукта
+     * @return продукт или null, если продукт не найден
+     */
     public Product getProductById(Long id) {
         Optional<Product> product = productRepository.findById(id);
         return product.orElse(null);
     }
 
-    // Получение списка уникальных категорий
+    /**
+     * Возвращает список уникальных категорий продуктов.
+     *
+     * @return множество категорий
+     */
     public Set<String> getAllCategories() {
         return productRepository.findAll()
                 .stream()
@@ -44,7 +69,11 @@ public class ProductService {
                 .collect(Collectors.toSet());
     }
 
-    // Получение списка уникальных брендов
+    /**
+     * Возвращает список уникальных брендов продуктов.
+     *
+     * @return множество брендов
+     */
     public Set<String> getAllBrands() {
         return productRepository.findAll()
                 .stream()
@@ -53,12 +82,21 @@ public class ProductService {
                 .collect(Collectors.toSet());
     }
 
-    // Сохранение товара (добавление или обновление)
+    /**
+     * Сохраняет продукт (добавление или обновление).
+     *
+     * @param product продукт для сохранения
+     * @return сохранённый продукт
+     */
     public Product saveProduct(Product product) {
         return productRepository.save(product);
     }
 
-    // Удаление товара по ID
+    /**
+     * Удаляет продукт по идентификатору, предварительно удаляя его из всех корзин и заказов.
+     *
+     * @param id идентификатор продукта
+     */
     public void deleteProduct(Long id) {
         // Удаляем товар из всех корзин
         cartRepository.findAll().forEach(cart -> {

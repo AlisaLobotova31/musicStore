@@ -11,12 +11,26 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * Фильтр для проверки reCAPTCHA при попытке входа в систему.
+ */
 @Component
 public class ReCaptchaLoginFilter extends OncePerRequestFilter {
 
+    /**
+     * Сервис для проверки reCAPTCHA.
+     */
     @Autowired
     private ReCaptchaService reCaptchaService;
 
+    /**
+     * Проверяет reCAPTCHA для POST-запросов на /login, перенаправляя на страницу входа при неудачной проверке.
+     *
+     * @param request HTTP-запрос
+     * @param response HTTP-ответ
+     * @param filterChain цепочка фильтров
+     * @throws IOException при ошибках ввода-вывода
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws IOException {

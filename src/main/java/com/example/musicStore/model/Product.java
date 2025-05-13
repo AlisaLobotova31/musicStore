@@ -3,26 +3,74 @@ package com.example.musicStore.model;
 import jakarta.persistence.*;
 import lombok.Data;
 
+/**
+ * Класс сущности, представляющий продукт в приложении музыкального магазина.
+ */
 @Entity
 @Data
 @Table(name = "products")
 public class Product {
+
+    /**
+     * Уникальный идентификатор продукта.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "product_seq")
     @SequenceGenerator(name = "product_seq", sequenceName = "product_seq", allocationSize = 1)
     private Long id;
 
+    /**
+     * Название продукта.
+     */
     private String name;
+
+    /**
+     * URL изображения продукта.
+     */
     private String image;
+
+    /**
+     * Категория продукта.
+     */
     private String category;
+
+    /**
+     * Бренд продукта.
+     */
     private String brand;
+
+    /**
+     * Цена продукта.
+     */
     private double price;
+
+    /**
+     * Наличие продукта на складе.
+     */
     private boolean inStock;
+
+    /**
+     * Описание продукта.
+     */
     private String description;
 
+    /**
+     * Конструктор по умолчанию.
+     */
     public Product() {
     }
 
+    /**
+     * Конструктор с указанием всех полей.
+     *
+     * @param name название продукта
+     * @param price цена продукта
+     * @param image URL изображения продукта
+     * @param category категория продукта
+     * @param description описание продукта
+     * @param brand бренд продукта
+     * @param inStock наличие на складе
+     */
     public Product(String name, double price, String image, String category, String description, String brand, boolean inStock) {
         this.name = name;
         this.price = price;
@@ -33,7 +81,9 @@ public class Product {
         this.inStock = inStock;
     }
 
-    // Геттеры и сеттеры
+    /**
+     * Геттеры и сеттеры для полей класса {@link Product}.
+     */
     public Long getId() {
         return id;
     }

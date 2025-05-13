@@ -1,6 +1,5 @@
-let allProducts = []; // Глобальная переменная для хранения всех товаров
+let allProducts = [];
 
-// Получение товаров с backend
 async function fetchProducts() {
     try {
         const response = await fetch('http://localhost:8080/api/public/products');
@@ -11,7 +10,6 @@ async function fetchProducts() {
     }
 }
 
-// Получение категорий с backend
 async function fetchCategories() {
     try {
         const response = await fetch('http://localhost:8080/api/public/products/categories');
@@ -30,7 +28,6 @@ async function fetchCategories() {
     }
 }
 
-// Получение брендов с backend
 async function fetchBrands() {
     try {
         const response = await fetch('http://localhost:8080/api/public/products/brands');
@@ -49,7 +46,6 @@ async function fetchBrands() {
     }
 }
 
-// Отображение товаров
 function displayProducts(products) {
     const productGrid = document.getElementById('product-grid');
     if (!productGrid) {
@@ -75,7 +71,6 @@ function displayProducts(products) {
     });
 }
 
-// Фильтрация и сортировка товаров
 function filterAndSortProducts() {
     const searchInput = document.getElementById('search-input').value.toLowerCase();
     const categoryFilter = document.getElementById('category-filter').value;
@@ -84,34 +79,30 @@ function filterAndSortProducts() {
 
     let filteredProducts = [...allProducts];
 
-    // Фильтрация по поиску
     if (searchInput) {
         filteredProducts = filteredProducts.filter(product =>
             product.name.toLowerCase().includes(searchInput)
         );
     }
 
-    // Фильтрация по категории
     if (categoryFilter) {
         filteredProducts = filteredProducts.filter(product =>
             product.category === categoryFilter
         );
     }
 
-    // Фильтрация по бренду
     if (brandFilter) {
         filteredProducts = filteredProducts.filter(product =>
             product.brand === brandFilter
         );
     }
 
-    // Сортировка
     switch (sortFilter) {
         case 'price-asc':
             filteredProducts.sort((a, b) => a.price - b.price);
             break;
         case 'price-desc':
-            filteredProducts.sort((a, b) => b.price - b.price);
+            filteredProducts.sort((a, b) => b.price - a.price);
             break;
         case 'name-asc':
             filteredProducts.sort((a, b) => a.name.localeCompare(b.name));
@@ -126,9 +117,9 @@ function filterAndSortProducts() {
     displayProducts(filteredProducts);
 }
 
-// Добавление товара в корзину через API
 async function addToCart(productId) {
     try {
+        console.log('Sending request to add product to cart, productId:', productId);
         const response = await fetch(`http://localhost:8080/api/cart/add/${productId}`, {
             method: 'POST',
             headers: {
@@ -136,18 +127,26 @@ async function addToCart(productId) {
             },
             credentials: 'include',
         });
+        console.log('Response status:', response.status);
+        console.log('Response ok:', response.ok);
+
         if (response.ok) {
             console.log('Product added to cart, updating UI...');
             await updateCartCount();
-            // Если мы на странице корзины, обновляем её через loadCart
             if (typeof loadCart === 'function') {
                 await loadCart();
             }
             alert('Товар добавлен в корзину!');
+        } else if (response.status === 401) {
+            const errorData = await response.json();
+            const errorMessage = errorData.message || 'Пожалуйста, авторизуйтесь';
+            console.log('Unauthorized, message:', errorMessage);
+            alert(errorMessage);
+            window.location.href = '/login.html';
         } else {
-            console.error('Failed to add product to cart, status:', response.status);
-            console.error('Response text:', await response.text());
-            alert('Ошибка при добавлении товара в корзину. Пожалуйста, войдите в систему.');
+            const errorText = await response.text();
+            console.log('Failed to add product to cart, status:', response.status, 'message:', errorText);
+            alert('Ошибка при добавлении товара в корзину: ' + errorText);
         }
     } catch (error) {
         console.error('Error adding to cart:', error);
@@ -155,7 +154,6 @@ async function addToCart(productId) {
     }
 }
 
-// Получение корзины с сервера
 async function fetchCart() {
     try {
         const response = await fetch(`http://localhost:8080/api/cart`, {
@@ -166,6 +164,15 @@ async function fetchCart() {
             const cart = await response.json();
             console.log('Fetched cart:', cart);
             return cart.items || [];
+        } else if (response.status === 401) {
+            const currentPath = window.location.pathname;
+            console.log('User not authenticated, current path:', currentPath);
+            // Перенаправляем только если пользователь на странице корзины
+            if (currentPath.includes('cart.html')) {
+                alert('Пожалуйста, авторизуйтесь, чтобы открыть корзину.');
+                window.location.href = '/login.html';
+            }
+            return [];
         } else {
             console.error('Failed to fetch cart, status:', response.status);
             console.error('Response text:', await response.text());
@@ -177,7 +184,6 @@ async function fetchCart() {
     }
 }
 
-// Обновление счетчика корзины
 async function updateCartCount() {
     const cartItems = await fetchCart();
     const cartCount = document.getElementById('cart-count');
@@ -195,7 +201,6 @@ async function updateCartCount() {
     console.log('Updated cart count:', totalItems);
 }
 
-// Оформление заказа через API
 async function checkout() {
     try {
         const response = await fetch('http://localhost:8080/api/cart/checkout', {
@@ -209,10 +214,12 @@ async function checkout() {
             console.log('Checkout successful, updating UI...');
             alert('Заказ оформлен!');
             await updateCartCount();
-            // Если мы на странице корзины, обновляем её через loadCart
             if (typeof loadCart === 'function') {
                 await loadCart();
             }
+        } else if (response.status === 401) {
+            alert('Пожалуйста, авторизуйтесь, чтобы оформить заказ.');
+            window.location.href = '/login.html';
         } else {
             console.error('Checkout failed, status:', response.status);
             console.error('Response text:', await response.text());
@@ -224,7 +231,6 @@ async function checkout() {
     }
 }
 
-// Проверка статуса авторизации
 async function checkAuthStatus() {
     const userStatus = document.getElementById('user-status');
     const loginLink = document.getElementById('login-link');
@@ -257,7 +263,6 @@ async function checkAuthStatus() {
             if (loginLink) loginLink.style.display = 'none';
             if (logoutLink) logoutLink.style.display = 'inline';
             if (profileLink) profileLink.style.display = 'inline';
-            // Показываем кнопку админ-панели только для роли ADMIN
             if (adminButton && user.role === 'ADMIN') {
                 adminButton.style.display = 'inline';
             } else if (adminButton) {
@@ -271,6 +276,12 @@ async function checkAuthStatus() {
             if (logoutLink) logoutLink.style.display = 'none';
             if (profileLink) profileLink.style.display = 'none';
             if (adminButton) adminButton.style.display = 'none';
+
+            const currentPath = window.location.pathname;
+            if (currentPath.includes('profile.html') || currentPath.includes('author.html') || currentPath.includes('cart.html')) {
+                alert('Пожалуйста, авторизуйтесь, чтобы открыть эту страницу.');
+                window.location.href = '/login.html';
+            }
         }
     } catch (error) {
         console.error('Error checking auth status:', error);
@@ -279,10 +290,15 @@ async function checkAuthStatus() {
         if (logoutLink) logoutLink.style.display = 'none';
         if (profileLink) profileLink.style.display = 'none';
         if (adminButton) adminButton.style.display = 'none';
+
+        const currentPath = window.location.pathname;
+        if (currentPath.includes('profile.html') || currentPath.includes('author.html') || currentPath.includes('cart.html')) {
+            alert('Пожалуйста, авторизуйтесь, чтобы открыть эту страницу.');
+            window.location.href = '/login.html';
+        }
     }
 }
 
-// Инициализация
 document.addEventListener('DOMContentLoaded', async () => {
     await checkAuthStatus();
     if (document.getElementById('product-grid')) {
@@ -290,9 +306,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         await fetchCategories();
         await fetchBrands();
     }
-    await updateCartCount();
+    // Вызываем updateCartCount только на страницах, где это необходимо
+    const currentPath = window.location.pathname;
+    if (!currentPath.includes('cart.html')) {
+        await updateCartCount();
+    }
 
-    // Добавляем обработчики событий для фильтрации и сортировки
     const searchInput = document.getElementById('search-input');
     const categoryFilter = document.getElementById('category-filter');
     const brandFilter = document.getElementById('brand-filter');

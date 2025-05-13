@@ -17,18 +17,38 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 
+/**
+ * Сервис для управления заказами, включая создание заказов и получение метрик.
+ */
 @Service
 public class OrderService {
 
+    /**
+     * Репозиторий для работы с заказами.
+     */
     @Autowired
     private OrderRepository orderRepository;
 
+    /**
+     * Сервис для работы с корзиной.
+     */
     @Autowired
     private CartService cartService;
 
+    /**
+     * Сервис для работы с пользователями.
+     */
     @Autowired
     private UserService userService;
 
+    /**
+     * Создаёт заказ на основе корзины пользователя.
+     *
+     * @param userId идентификатор пользователя
+     * @return созданный заказ
+     * @throws IllegalArgumentException если пользователь не найден
+     * @throws IllegalStateException если корзина пуста
+     */
     @Transactional
     public Order createOrder(Long userId) {
         // Находим пользователя
@@ -75,10 +95,21 @@ public class OrderService {
         return order;
     }
 
+    /**
+     * Возвращает список заказов пользователя.
+     *
+     * @param userId идентификатор пользователя
+     * @return список заказов
+     */
     public List<Order> getOrdersByUser(Long userId) {
         return orderRepository.findByUserId(userId);
     }
 
+    /**
+     * Возвращает метрики о количестве заказов по пользователям.
+     *
+     * @return список метрик (имя пользователя и количество заказов)
+     */
     public List<Map<String, Object>> getOrdersCountByUser() {
         List<Order> orders = orderRepository.findAll();
         return orders.stream()
@@ -96,6 +127,11 @@ public class OrderService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Возвращает метрики об общей стоимости заказов по пользователям.
+     *
+     * @return список метрик (имя пользователя и общая стоимость)
+     */
     public List<Map<String, Object>> getTotalPriceByUser() {
         List<Order> orders = orderRepository.findAll();
         return orders.stream()

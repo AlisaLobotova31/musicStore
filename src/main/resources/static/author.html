@@ -5,128 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Об авторе</title>
   <link rel="stylesheet" href="/css/styles.css">
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Arial', sans-serif;
-      background-color: #f4f4f4;
-      color: #333;
-    }
-    header {
-      background-color: #fff;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-    .top-bar {
-      background-color: #333;
-      color: white;
-      padding: 10px 20px;
-      display: flex;
-      justify-content: space-between;
-      font-size: 14px;
-    }
-    .author-section {
-      display: flex;
-      min-height: calc(100vh - 200px); /* Учитываем высоту header и footer */
-      align-items: stretch;
-    }
-
-    nav ul {
-      display: flex;
-      list-style: none;
-    }
-
-    nav ul li {
-      margin: 0 15px;
-    }
-
-    nav ul li a {
-      color: #333;
-      text-decoration: none;
-      font-size: 14px;
-    }
-
-    nav ul li a:hover {
-      text-decoration: underline;
-    }
-
-    .author-photo {
-      flex: 1;
-      background: url('/images/me.jpg') no-repeat center center;
-      background-size: cover;
-      min-height: 400px;
-    }
-    .author-info {
-      flex: 1;
-      padding: 40px;
-      background-color: #fff;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-    .author-info h1 {
-      font-size: 36px;
-      margin-bottom: 20px;
-      color: #007bff;
-    }
-    .author-info p {
-      font-size: 18px;
-      line-height: 1.6;
-      margin-bottom: 20px;
-    }
-    .author-info .contact {
-      font-size: 16px;
-      color: #555;
-    }
-    footer {
-      background-color: #333;
-      color: white;
-      padding: 20px;
-      text-align: center;
-    }
-    .footer-content {
-      display: flex;
-      justify-content: space-around;
-      flex-wrap: wrap;
-      gap: 20px;
-    }
-    .footer-section h3 {
-      margin-bottom: 10px;
-    }
-    .footer-section ul {
-      list-style: none;
-      padding: 0;
-    }
-    .footer-section ul li {
-      margin-bottom: 5px;
-    }
-    .footer-section ul li a {
-      color: white;
-      text-decoration: none;
-    }
-    .footer-section ul li a:hover {
-      text-decoration: underline;
-    }
-    /* Адаптивность */
-    @media (max-width: 768px) {
-      .author-section {
-        flex-direction: column;
-      }
-      .author-photo {
-        flex: none;
-        height: 50vh;
-        min-height: 300px;
-      }
-      .author-info {
-        padding: 20px;
-      }
-      .author-info h1 {
-        font-size: 28px;
-      }
-      .author-info p {
-        font-size: 16px;
-      }
-    }
-  </style>
 </head>
 <body>
 <header>
@@ -137,9 +15,9 @@
   <nav>
     <div class="logo">Music Store</div>
     <ul>
-      <li><a href="/index.html">Каталог</a></li>
-      <li><a href="/cart.html">Корзина</a></li>
-      <li><a href="/profile.html">Личный кабинет</a></li>
+      <li><a href="/index.html"><span class="nav-icon">←</span> Назад в каталог</a></li>
+      <li><a href="/cart.html" class="nav-link"><img src="/images/cart-icon.png" alt="Cart" class="nav-icon"> Корзина</a></li>
+      <li><a href="/profile.html" class="nav-link"><img src="/images/user-icon.png" alt="Profile" class="nav-icon"> Личный кабинет</a></li>
       <li><a href="/logout">Выйти</a></li>
       <!-- Скрытые элементы для совместимости с checkAuthStatus -->
       <li style="display: none;">
@@ -157,17 +35,24 @@
   <div class="author-info">
     <h1>Об авторе</h1>
     <p>
-      ЗДАРОВА НАХУЙ! Я РОМАН, создатель этого ебанутого музыкального магазина.
-      Моя страсть — музыка и технологии, и я объединил их, чтобы создать место, где каждый может найти идеальное аудиооборудование.
-      Этот проект — результат моей работы над тем, чтобы сделать покупку наушников, колонок и микрофонов максимально удобной и крутой!
+      Здравствуйте!
+      Меня зовут Лоботова Алиса Владимировна.
     </p>
     <p>
-      Если хочешь узнать больше или предложить идеи для магазина, пиши мне!
-      Я всегда открыт к новым проектам и коллаборациям.
+      Я студентка второго курса Финансового университета при Правительстве Российской Федерации,
+      учусь на направлении «Технологии разработки программного обеспечения».
+    </p>
+    <p>
+      Этот сайт был разработан в рамках моей курсовой работы по дисциплине «Современные технологии программирования».
+      Тема проекта — «Информационно-справочная система магазина по продаже музыкальных инструментов».
+      Его основная цель — оптимизировать взаимодействие покупателей с товарами.
+    </p>
+    <p>
+      Контактная информация: 233546@edu.fa.ru
     </p>
     <div class="contact">
-      <p>Email: <a href="mailto:music.man@gmail.com">music.man@gmail.com</a></p>
-      <p>Telegram: @RmchkTelegram</p>
+      <p>Email: <a href="/cdn-cgi/l/email-protection#0e637b7d676d20636f604e69636f6762206d6163"><span class="__cf_email__" data-cfemail="fbd6cec8d2d895d6dad5fbdcd6dad2d795d8d4d6">info@musicstore.ru</span></a></p>
+      <p>Telegram: @AliceTelegram</p>
     </div>
   </div>
 </section>
@@ -177,7 +62,7 @@
     <div class="footer-contacts">
       <h3>Контакты</h3>
       <p>Телефон:  +7 (800) 333-99-99</p>
-      <p><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7f161119103f120a0c161c0c0b100d1a510d0a">Email:  info@musicstore.ru</a></p>
+      <p><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7f161119103f120a0c161c0c0b100d1a510d0a">Email:  <span class="__cf_email__" data-cfemail="3950575f5679544c4a505a4a4d564b5c174b4c">info@musicstore.ru</span></a></p>
     </div>
     <div class="footer-copyright">
       <p>© Магазин персонального аудио «Music Store», 2020-2025</p>
@@ -185,12 +70,8 @@
   </div>
 </footer>
 
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
 <script src="/js/script.js"></script>
-<script>
-  // Проверка авторизации при загрузке страницы
-  window.onload = () => {
-    checkAuthStatus();
-  };
-</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'936ef3b28b6ebd2b',t:'MTc0NTc2MzUzNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>

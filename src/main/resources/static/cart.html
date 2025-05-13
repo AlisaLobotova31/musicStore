@@ -27,7 +27,7 @@
             </li>
             <li>
                 <a href="/profile.html" class="nav-link">
-                    Личный кабинет
+                    <img src="/images/user-icon.png" alt="Profile" class="nav-icon"> Личный кабинет
                 </a>
             </li>
             <li>
@@ -50,10 +50,11 @@
     <div class="cart-container">
         <h1>Корзина <span id="cart-items-count">0</span></h1>
         <div id="cart-items">
-            <!-- Товары в корзине будут добавлены через JavaScript -->
+            <!-- Товары в корзине добавлены через JavaScript -->
         </div>
         <div class="cart-total">
             <p>Итого: <span id="cart-total">0 руб.</span></p>
+            <button id="clear-cart-button" class="clear-cart-button">Очистить корзину</button>
             <button id="checkout-button">Оформить заказ</button>
         </div>
     </div>
@@ -64,7 +65,7 @@
         <div class="footer-contacts">
             <h3>Контакты</h3>
             <p>Телефон:  +7 (800) 333-99-99</p>
-            <p><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7f161119103f120a0c161c0c0b100d1a510d0a">Email:  info@musicstore.ru</a></p>
+            <p><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7f161119103f120a0c161c0c0b100d1a510d0a">Email:  <span class="__cf_email__" data-cfemail="nea7a0a8a19ea3bbbda7adbdbaa1bcabe0bcbb">info@musicstore.ru</span></a></p>
         </div>
         <div class="footer-copyright">
             <p>© Магазин персонального аудио «Music Store», 2020-2025</p>
@@ -78,62 +79,103 @@
     // Загрузка товаров в корзине
     async function loadCart() {
         try {
-            console.log('Fetching cart from /api/cart...');
             const response = await fetch('http://localhost:8080/api/cart', {
                 credentials: 'include',
             });
-            console.log('Cart response status:', response.status);
-            if (response.ok) {
-                const cart = await response.json();
-                console.log('Cart data:', cart);
-                const cartItems = document.getElementById('cart-items');
-                const cartItemsCount = document.getElementById('cart-items-count');
-                const cartTotal = document.getElementById('cart-total');
-                const cartCount = document.getElementById('cart-count');
-
-                cartItems.innerHTML = '';
-
-                if (cart.items.length === 0) {
-                    cartItems.innerHTML = '<p>Ваша корзина пуста.</p>';
-                    cartItemsCount.textContent = '0';
-                    cartTotal.textContent = '0 руб.';
-                    cartCount.textContent = '0';
-                    return;
-                }
-
-                let total = 0;
-                cart.items.forEach(item => {
-                    const cartItem = document.createElement('div');
-                    cartItem.classList.add('cart-item');
-                    cartItem.innerHTML = `
-                        <img src="${item.product.image}" alt="${item.product.name}" class="cart-item-image">
-                        <div class="cart-item-details">
-                            <p><strong>${item.product.name}</strong></p>
-                            <p>Цена: ${item.product.price} руб.</p>
-                            <p>Количество: ${item.quantity}</p>
-                            <p>Сумма: ${item.product.price * item.quantity} руб.</p>
-                        </div>
-                    `;
-                    cartItems.appendChild(cartItem);
-                    total += item.product.price * item.quantity;
-                });
-
-                cartItemsCount.textContent = cart.items.length;
-                cartTotal.textContent = `${total} руб.`;
-                cartCount.textContent = cart.items.length;
-            } else {
-                console.log('Failed to load cart, status:', response.status);
+            if (!response.ok) {
                 document.getElementById('cart-items').innerHTML = '<p>Ошибка при загрузке корзины.</p>';
+                return;
+            }
+
+            const cart = await response.json();
+            const cartItems = document.getElementById('cart-items');
+            const cartItemsCount = document.getElementById('cart-items-count');
+            const cartTotal = document.getElementById('cart-total');
+            const cartCount = document.getElementById('cart-count');
+
+            cartItems.innerHTML = '';
+
+            if (!cart.items || cart.items.length === 0) {
+                cartItems.innerHTML = '<p>Ваша корзина пуста.</p>';
+                cartItemsCount.textContent = '0';
+                cartTotal.textContent = '0 руб.';
+                cartCount.textContent = '0';
+                return;
+            }
+
+            let total = 0;
+            cart.items.forEach(item => {
+                if (!item.product) return; // Пропускаем, если product отсутствует
+                const cartItem = document.createElement('div');
+                cartItem.classList.add('cart-item');
+                cartItem.innerHTML = `
+                    <img src="${item.product.image || 'images/placeholder.jpg'}" alt="${item.product.name}" class="cart-item-image">
+                    <div class="cart-item-details">
+                        <p><strong>${item.product.name}</strong></p>
+                        <p>Цена: ${item.product.price} руб.</p>
+                        <p>Количество: ${item.quantity}</p>
+                        <p>Сумма: ${item.product.price * item.quantity} руб.</p>
+                        <button class="remove-item-button" onclick="removeFromCart(${item.id})">Удалить</button>
+                    </div>
+                `;
+                cartItems.appendChild(cartItem);
+                total += item.product.price * item.quantity;
+            });
+
+            cartItemsCount.textContent = cart.items.length;
+            cartTotal.textContent = `${total} руб.`;
+            cartCount.textContent = cart.items.length;
+        } catch (error) {
+            document.getElementById('cart-items').innerHTML = '<p>Ошибка при загрузке корзины.</p>';
+        }
+    }
+
+    // Удаление товара из корзины
+    async function removeFromCart(cartItemId) {
+        try {
+            const response = await fetch(`http://localhost:8080/api/cart/remove/${cartItemId}`, {
+                method: 'DELETE',
+                credentials: 'include',
+            });
+            if (response.ok) {
+                await loadCart();
+                await updateCartCount();
+                alert('Товар удалён из корзины!');
+            } else {
+                alert('Ошибка при удалении товара из корзины.');
             }
         } catch (error) {
-            console.error('Error loading cart:', error);
-            document.getElementById('cart-items').innerHTML = '<p>Ошибка при загрузке корзины.</p>';
+            alert('Произошла ошибка. Пожалуйста, попробуйте снова.');
+        }
+    }
+
+    // Очистка корзины
+    async function clearCart() {
+        try {
+            const response = await fetch('http://localhost:8080/api/cart/clear', {
+                method: 'DELETE',
+                credentials: 'include',
+            });
+            if (response.ok) {
+                await loadCart();
+                await updateCartCount();
+                alert('Корзина очищена!');
+            } else {
+                alert('Ошибка при очистке корзины.');
+            }
+        } catch (error) {
+            alert('Произошла ошибка. Пожалуйста, попробуйте снова.');
         }
     }
 
     // Обработка оформления заказа
     document.getElementById('checkout-button').addEventListener('click', async () => {
         await checkout();
+    });
+
+    // Обработка очистки корзины
+    document.getElementById('clear-cart-button').addEventListener('click', async () => {
+        await clearCart();
     });
 
     // Загружаем данные при загрузке страницы
@@ -143,5 +185,6 @@
     };
 </script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'932eb9aeea561d6c',t:'MTc0NTA5MDA3MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'937076a98ffac59d',t:'MTc0NTc3OTM4NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>

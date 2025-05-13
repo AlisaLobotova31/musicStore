@@ -6,17 +6,30 @@ import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * Класс сущности, представляющий заказ пользователя в приложении музыкального магазина.
+ */
 @Entity
 @Table(name = "orders")
 public class Order {
+
+    /**
+     * Уникальный идентификатор заказа.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /**
+     * Пользователь, сделавший заказ.
+     */
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
+    /**
+     * Список продуктов в заказе.
+     */
     @ManyToMany
     @JoinTable(
             name = "order_products",
@@ -25,19 +38,38 @@ public class Order {
     )
     private List<Product> products;
 
+    /**
+     * Дата и время создания заказа.
+     */
     private LocalDateTime orderDate;
+
+    /**
+     * Общая стоимость заказа.
+     */
     private double totalPrice;
-    // Конструкторы
+
+    /**
+     * Конструктор по умолчанию.
+     */
     public Order() {
     }
 
+    /**
+     * Конструктор с указанием пользователя, даты заказа и общей стоимости.
+     *
+     * @param user пользователь, сделавший заказ
+     * @param orderDate  дата и время заказа
+     * @param totalPrice общая стоимость заказа
+     */
     public Order(User user, LocalDateTime orderDate, double totalPrice) {
         this.user = user;
         this.orderDate = orderDate;
         this.totalPrice = totalPrice;
     }
 
-    // Геттеры и сеттеры
+    /**
+     * Геттеры и сеттеры для полей класса {@link Order}.
+     */
     public Long getId() {
         return id;
     }
@@ -78,10 +110,20 @@ public class Order {
         this.products = products;
     }
 
+    /**
+     * Добавляет продукт в заказ.
+     *
+     * @param product продукт для добавления
+     */
     public void addProduct(Product product) {
         this.products.add(product);
     }
 
+    /**
+     * Удаляет продукт из заказа.
+     *
+     * @param product продукт для удаления
+     */
     public void removeProduct(Product product) {
         this.products.remove(product);
     }

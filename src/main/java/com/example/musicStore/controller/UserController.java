@@ -12,16 +12,31 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * Контроллер для управления операциями с пользователями, такими как регистрация, получение данных и смена пароля или email.
+ */
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
 
+    /**
+     * Сервис для работы с пользователями.
+     */
     @Autowired
     private UserService userService;
 
+    /**
+     * Сервис для проверки reCAPTCHA.
+     */
     @Autowired
     private ReCaptchaService reCaptchaService;
 
+    /**
+     * Регистрирует нового пользователя в системе.
+     *
+     * @param request объект запроса, содержащий данные для регистрации (имя пользователя, email, пароль, reCAPTCHA)
+     * @return {@link ResponseEntity} с результатом операции (успех или ошибка)
+     */
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody UserRegistrationRequest request) {
         try {
@@ -70,6 +85,12 @@ public class UserController {
         }
     }
 
+    /**
+     * Возвращает данные текущего аутентифицированного пользователя.
+     *
+     * @param authentication объект аутентификации, содержащий данные пользователя
+     * @return {@link ResponseEntity} с данными пользователя или ошибкой
+     */
     @GetMapping("/me")
     @JsonView(Views.Public.class)
     public ResponseEntity<?> getCurrentUser(Authentication authentication) {
@@ -87,6 +108,13 @@ public class UserController {
         }
     }
 
+    /**
+     * Изменяет пароль текущего аутентифицированного пользователя.
+     *
+     * @param request объект запроса, содержащий старый и новый пароль
+     * @param authentication объект аутентификации, содержащий данные пользователя
+     * @return {@link ResponseEntity} с результатом операции (успех или ошибка)
+     */
     @PostMapping("/change-password")
     public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest request, Authentication authentication) {
         try {
@@ -119,6 +147,13 @@ public class UserController {
         }
     }
 
+    /**
+     * Изменяет email текущего аутентифицированного пользователя.
+     *
+     * @param request объект запроса, содержащий новый email
+     * @param authentication объект аутентификации, содержащий данные пользователя
+     * @return {@link ResponseEntity} с результатом операции (успех или ошибка)
+     */
     @PostMapping("/change-email")
     public ResponseEntity<?> changeEmail(@RequestBody ChangeEmailRequest request, Authentication authentication) {
         try {
@@ -152,12 +187,34 @@ public class UserController {
     }
 }
 
+/**
+ * Класс запроса для регистрации пользователя.
+ */
 class UserRegistrationRequest {
+
+    /**
+     * Имя пользователя.
+     */
     private String username;
+
+    /**
+     * Адрес электронной почты.
+     */
     private String email;
+
+    /**
+     * Пароль пользователя.
+     */
     private String password;
+
+    /**
+     * Ответ reCAPTCHA для проверки.
+     */
     private String recaptchaResponse;
 
+    /**
+     * Геттеры и сеттеры для полей класса {@link UserRegistrationRequest}.
+     */
     public String getUsername() {
         return username;
     }
@@ -191,10 +248,24 @@ class UserRegistrationRequest {
     }
 }
 
+/**
+ * Класс запроса для смены пароля.
+ */
 class ChangePasswordRequest {
+
+    /**
+     * Старый пароль пользователя.
+     */
     private String oldPassword;
+
+    /**
+     * Новый пароль пользователя.
+     */
     private String newPassword;
 
+    /**
+     * Геттеры и сеттеры для полей класса {@link ChangePasswordRequest}.
+     */
     public String getOldPassword() {
         return oldPassword;
     }
@@ -212,9 +283,19 @@ class ChangePasswordRequest {
     }
 }
 
+/**
+ * Класс запроса для смены email.
+ */
 class ChangeEmailRequest {
+
+    /**
+     * Новый адрес электронной почты.
+     */
     private String newEmail;
 
+    /**
+     * Геттеры и сеттеры для полей класса {@link ChangeEmailRequest}.
+     */
     public String getNewEmail() {
         return newEmail;
     }

@@ -12,25 +12,44 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Контроллер для операций, доступных только пользователям с ролью ADMIN.
+ */
 @RestController
 @RequestMapping("/api/admin")
 @PreAuthorize("hasRole('ADMIN')")
 public class AdminController {
 
+    /**
+     * Сервис для работы с продуктами.
+     */
     @Autowired
     private ProductService productService;
 
+    /**
+     * Сервис для работы с пользователями.
+     */
     @Autowired
     private UserService userService;
 
-    // Получение списка всех пользователей
+    /**
+     * Возвращает список всех пользователей.
+     *
+     * @return {@link ResponseEntity} со списком пользователей
+     */
     @GetMapping("/users")
     public ResponseEntity<List<User>> getAllUsers() {
         List<User> users = userService.findAll();
         return ResponseEntity.ok(users);
     }
 
-    // Изменение роли пользователя
+    /**
+     * Изменяет роль пользователя.
+     *
+     * @param userId  идентификатор пользователя
+     * @param request объект запроса с новой ролью
+     * @return {@link ResponseEntity} с результатом операции
+     */
     @PutMapping("/users/{userId}/role")
     public ResponseEntity<?> changeUserRole(@PathVariable Long userId, @RequestBody RoleUpdateRequest request) {
         try {
@@ -47,7 +66,12 @@ public class AdminController {
         }
     }
 
-    // Удаление пользователя
+    /**
+     * Удаляет пользователя.
+     *
+     * @param userId идентификатор пользователя
+     * @return {@link ResponseEntity} с результатом операции
+     */
     @DeleteMapping("/users/{userId}")
     public ResponseEntity<?> deleteUser(@PathVariable Long userId) {
         try {
@@ -63,7 +87,12 @@ public class AdminController {
         }
     }
 
-    // Добавление товара
+    /**
+     * Добавляет новый продукт.
+     *
+     * @param product объект продукта
+     * @return {@link ResponseEntity} с сохранённым продуктом или ошибкой
+     */
     @PostMapping("/products")
     public ResponseEntity<?> addProduct(@RequestBody Product product) {
         try {
@@ -75,7 +104,13 @@ public class AdminController {
         }
     }
 
-    // Обновление товара
+    /**
+     * Обновляет существующий продукт.
+     *
+     * @param productId идентификатор продукта
+     * @param product объект продукта с обновлёнными данными
+     * @return {@link ResponseEntity} с обновлённым продуктом или ошибкой
+     */
     @PutMapping("/products/{productId}")
     public ResponseEntity<?> updateProduct(@PathVariable Long productId, @RequestBody Product product) {
         try {
@@ -92,7 +127,12 @@ public class AdminController {
         }
     }
 
-    // Удаление товара
+    /**
+     * Удаляет продукт.
+     *
+     * @param productId идентификатор продукта
+     * @return {@link ResponseEntity} с результатом операции
+     */
     @DeleteMapping("/products/{productId}")
     public ResponseEntity<?> deleteProduct(@PathVariable Long productId) {
         try {
@@ -105,9 +145,19 @@ public class AdminController {
     }
 }
 
+/**
+ * Класс запроса для обновления роли пользователя.
+ */
 class RoleUpdateRequest {
+
+    /**
+     * Новая роль пользователя.
+     */
     private String role;
 
+    /**
+     * Геттеры и сеттеры для поля класса {@link RoleUpdateRequest}.
+     */
     public String getRole() {
         return role;
     }

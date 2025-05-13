@@ -2,14 +2,35 @@ package com.example.musicStore.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+/**
+ * Класс, представляющий ответ от сервиса Google reCAPTCHA.
+ */
 public class ReCaptchaResponse {
 
+    /**
+     * Успешность проверки reCAPTCHA.
+     */
     private boolean success;
+
+    /**
+     * Временная метка вызова reCAPTCHA.
+     */
     private String challengeTs;
+
+    /**
+     * Имя хоста, на котором выполнялась проверка.
+     */
     private String hostname;
+
+    /**
+     * Коды ошибок, возвращённые при проверке.
+     */
     @JsonProperty("error-codes")
     private String[] errorCodes;
 
+    /**
+     * Геттеры и сеттеры для полей класса {@link ReCaptchaResponse}.
+     */
     public boolean isSuccess() {
         return success;
     }

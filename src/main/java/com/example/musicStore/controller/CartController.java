@@ -8,33 +8,64 @@ import com.example.musicStore.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Контроллер для управления операциями с корзиной, такими как добавление/удаление продуктов и оформление заказов.
+ */
 @RestController
 @RequestMapping("/api/cart")
 public class CartController {
 
+    /**
+     * Сервис для работы с корзиной.
+     */
     @Autowired
     private CartService cartService;
 
+    /**
+     * Сервис для работы с заказами.
+     */
     @Autowired
     private OrderService orderService;
 
+    /**
+     * Сервис для работы с пользователями.
+     */
     @Autowired
     private UserService userService;
 
-    // Получить корзину текущего пользователя
+    /**
+     * Возвращает корзину текущего аутентифицированного пользователя.
+     *
+     * @param authentication объект аутентификации, содержащий данные пользователя
+     * @return корзина пользователя
+     */
     @GetMapping
-    public Cart getCart(Authentication authentication) {
-        Long userId = getUserIdFromAuthentication(authentication);
-        return cartService.getCartByUser(userId);
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Cart> getCart(Authentication authentication) {
+        try {
+            Long userId = getUserIdFromAuthentication(authentication);
+            return ResponseEntity.ok(cartService.getCartByUser(userId));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 
-    // Добавить товар в корзину
+    /**
+     * Добавляет продукт в корзину пользователя.
+     *
+     * @param productId идентификатор продукта
+     * @param authentication объект аутентификации, содержащий данные пользователя
+     * @return {@link ResponseEntity} с обновлённой корзиной или ошибкой
+     */
     @PostMapping("/add/{productId}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> addToCart(@PathVariable Long productId, Authentication authentication) {
         try {
             Long userId = getUserIdFromAuthentication(authentication);
@@ -47,31 +78,88 @@ public class CartController {
         }
     }
 
-    // Удалить товар из корзины
-    @DeleteMapping("/remove/{productId}")
-    public Cart removeFromCart(@PathVariable Long productId, Authentication authentication) {
-        Long userId = getUserIdFromAuthentication(authentication);
-        return cartService.removeProductFromCart(userId, productId);
+    /**
+     * Удаляет элемент из корзины пользователя.
+     *
+     * @param cartItemId идентификатор элемента корзины
+     * @param authentication объект аутентификации, содержащий данные пользователя
+     * @return {@link ResponseEntity} с обновлённой корзиной или ошибкой
+     */
+    @DeleteMapping("/remove/{cartItemId}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Cart> removeFromCart(@PathVariable Long cartItemId, Authentication authentication) {
+        try {
+            Long userId = getUserIdFromAuthentication(authentication);
+            Cart cart = cartService.removeProductFromCart(userId, cartItemId);
+            return ResponseEntity.ok(cart);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 
-    // Оформить заказ
+    /**
+     * Очищает корзину пользователя.
+     *
+     * @param authentication объект аутентификации, содержащий данные пользователя
+     * @return {@link ResponseEntity} с результатом операции
+     */
+    @DeleteMapping("/clear")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Void> clearCart(Authentication authentication) {
+        try {
+            Long userId = getUserIdFromAuthentication(authentication);
+            cartService.clearCart(userId);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Оформляет заказ на основе корзины пользователя.
+     *
+     * @param authentication объект аутентификации, содержащий данные пользователя
+     * @return созданный заказ
+     */
     @PostMapping("/checkout")
-    public Order checkout(Authentication authentication) {
-        Long userId = getUserIdFromAuthentication(authentication);
-        return orderService.createOrder(userId);
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Order> checkout(Authentication authentication) {
+        try {
+            Long userId = getUserIdFromAuthentication(authentication);
+            return ResponseEntity.ok(orderService.createOrder(userId));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 
-    // Получить историю заказов
+    /**
+     * Возвращает историю заказов текущего пользователя.
+     *
+     * @param authentication объект аутентификации, содержащий данные пользователя
+     * @return список заказов пользователя
+     */
     @GetMapping("/orders")
-    public List<Order> getOrders(Authentication authentication) {
-        System.out.println("GET /api/cart/orders - Authentication: " + authentication);
-        Long userId = getUserIdFromAuthentication(authentication);
-        System.out.println("GET /api/cart/orders - User ID: " + userId);
-        List<Order> orders = orderService.getOrdersByUser(userId);
-        System.out.println("GET /api/cart/orders - Returning orders: " + orders);
-        return orders;
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<Order>> getOrders(Authentication authentication) {
+        try {
+            Long userId = getUserIdFromAuthentication(authentication);
+            List<Order> orders = orderService.getOrdersByUser(userId);
+            return ResponseEntity.ok(orders);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 
+    /**
+     * Получает идентификатор пользователя из объекта аутентификации.
+     *
+     * @param authentication объект аутентификации
+     * @return идентификатор пользователя
+     */
     private Long getUserIdFromAuthentication(Authentication authentication) {
         String username = authentication.getName();
         return userService.getUserIdByUsername(username);
